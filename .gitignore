@@ -1,2 +1,4 @@
 out/
 src/boot/
+.DS_Stores
+*/.DS_Store
