@@ -1,0 +1,24 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "SGDK: Build ROM (release)",
+            "type": "shell",
+            "command": "docker run --rm -v \"$PWD\":/m68k -t registry.gitlab.com/doragasu/docker-sgdk:v2.11 release",
+            "problemMatcher": [],
+            "group": "build",
+            "detail": "Compila a ROM para lançamento final."
+        },
+        {
+            "label": "SGDK: Build ROM (debug)",
+            "type": "shell",
+            "command": "docker run --rm -v \"$PWD\":/m68k -t registry.gitlab.com/doragasu/docker-sgdk:v2.11 debug",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Compila a ROM com símbolos de depuração."
+        }
+    ]
+}
