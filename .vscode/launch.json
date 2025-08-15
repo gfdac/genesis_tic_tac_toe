@@ -6,20 +6,26 @@
             "type": "cppdbg",
             "request": "launch",
             "MIMode": "gdb",
-
+            "targetArchitecture": "arm64", 
             "miDebuggerPath": "${workspaceFolder}/debug.sh",
-
+            
             "miDebuggerArgs": "",
-
+               
             "miDebuggerServerAddress": "host.docker.internal:6868",
 
             "program": "/m68k/out/rom.out",
 
             "cwd": "/m68k",
             "valuesFormatting": "hex",
-            "stopAtEntry": true,
+            "stopAtEntry": false,
 
-            "externalConsole": true
+            "sourceFileMap": {
+                "/m68k": "${workspaceFolder}"
+            },
+
+            "externalConsole": true,
+
+            "useExtendedRemote" : true,
         }
     ]
 }
