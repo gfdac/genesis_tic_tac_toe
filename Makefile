@@ -16,7 +16,7 @@ RES_DIR := res
 OUT_DIR := out
 
 # Adiciona os diretórios de fontes ao VPATH
-VPATH := $(SRC_DIR):$(SRC_DIR)/boot
+# VPATH := $(SRC_DIR):$(SRC_DIR)/boot
 
 # Flags de compilação
 CFLAGS := -DSGDK_GCC -m68000 -fdiagnostics-color=always -Wall -Wextra -Wno-shift-negative-value -Wno-main -Wno-unused-parameter -fno-builtin -ffunction-sections -fdata-sections -fms-extensions -I. -I$(INC_DIR) -I$(SRC_DIR) -I$(RES_DIR) -I/sgdk/inc -I/sgdk/res -B/sgdk/bin
@@ -28,16 +28,19 @@ LDFLAGS := -m68000 -B/sgdk/bin -n -T /sgdk/md.ld -nostdlib -Wl,--gc-sections -fl
 LIBS := /sgdk/lib/libmd.a -lgcc
 
 # Define os arquivos de código
-C_SRCS := $(SRC_DIR)/boot/rom_head.c $(SRC_DIR)/main.c
-S_SRCS := $(SRC_DIR)/boot/sega.s
+C_SRCS := $(wildcard $(SRC_DIR)/**/*.c) $(wildcard $(SRC_DIR)/*.c)
+S_SRCS := $(wildcard $(SRC_DIR)/**/*.s) $(wildcard $(SRC_DIR)/*.s)
 
 # Define os arquivos objeto
-OBJS := $(OUT_DIR)/rom_head.o $(OUT_DIR)/sega.o $(OUT_DIR)/main.o
+OBJS := $(patsubst $(SRC_DIR)/%.c,$(OUT_DIR)/%.o,$(filter %.c,$(C_SRCS)))
+OBJS += $(patsubst $(SRC_DIR)/%.s,$(OUT_DIR)/%.o,$(filter %.s,$(S_SRCS)))
 
 # Alvos
-.PHONY: all clean debug
+.PHONY: all clean debug release
 
 all: $(ROM)
+
+release: all
 
 debug: CFLAGS += -ggdb -DDEBUG=1
 debug: all
@@ -56,12 +59,12 @@ $(TARGET): $(OBJS)
 	@m68k-elf-nm -n -l $(TARGET) > $(OUT_DIR)/symbol.txt
 	@echo "Linking complete!"
 
-%.o: %.c
+$(OUT_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo "Compiling $<..."
 	@mkdir -p $(@D)
 	@$(GCC) $(CFLAGS) $(OPTIMIZATION_FLAGS) -MMD -c $< -o $@
 
-%.o: %.s
+$(OUT_DIR)/%.o: $(SRC_DIR)/%.s
 	@echo "Assembling $<..."
 	@mkdir -p $(@D)
 	@$(GCC) $(CFLAGS) $(OPTIMIZATION_FLAGS) -x assembler-with-cpp -Wa,--register-prefix-optional,--bitwise-or -c $< -o $@
